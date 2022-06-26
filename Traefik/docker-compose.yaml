@@ -20,7 +20,7 @@ services:
       - "./acme.json:/acme.json"
     labels:
       # Dashboard
-      - "traefik.http.routers.traefik.rule=Host(`DOMINIO.com.br`)"
+      - "traefik.http.routers.traefik.rule=Host(`DOMINIO`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.entrypoints=websecure"
@@ -31,9 +31,9 @@ services:
 
 
   webapp:
-    image: containous/whoami:v1.3.0
+    image: containous/whoami
     labels:
-      - "traefik.http.routers.app1.rule=Host(`DOMINIO.com.br`)"
+      - "traefik.http.routers.app1.rule=Host(`DOMINIO`)"
       - "traefik.http.routers.app1.entrypoints=websecure"
       - "traefik.http.routers.app1.tls=true"
       - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
