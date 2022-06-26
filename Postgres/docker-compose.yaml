@@ -1,0 +1,47 @@
+version: '3'
+
+volumes:
+  postgres_data:
+      driver: local
+
+services:
+  postgres:
+      container_name: postgres
+      image: postgres
+      volumes:
+        - postgres_data:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: postgres-db
+        POSTGRES_USER: user-postgres
+        POSTGRES_PASSWORD: password-postgres
+      ports:
+       - 5432:5432
+      restart: always
+      networks:
+        - postgres-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "EMAIL"
+      PGADMIN_DEFAULT_PASSWORD: "PASSWORD"
+    # ports:
+    #  - "16543:80"
+
+    restart: always
+
+    depends_on:
+      - postgres
+    labels:
+      # Configuração para acessar o pgadmin no navegador com traefik
+      # Vide mais detalhes na configuração do traefik
+
+      - "traefik.http.routers.app1.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.app1.entrypoints=websecure"
+      - "traefik.http.routers.app1.tls=true"
+      - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
+    networks:
+        - postgres-network
+networks:
+    postgres-compose-network:
+   #   driver: none
