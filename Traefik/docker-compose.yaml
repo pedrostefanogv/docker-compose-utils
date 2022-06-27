@@ -4,38 +4,72 @@ services:
   traefik:
     image: "traefik:latest"
     command:
+      # informa para o traefik como descobrir os containers
+      - --providers.docker=true
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
-      - --providers.docker
+
       - --api
       - --certificatesresolvers.letsencrypt.acme.email=EMAIL
       - --certificatesresolvers.letsencrypt.acme.storage=/acme.json
       - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1
+
+      # configurar certificado coringa
+      - --entrypoints.websecure.http.tls=true
+      - --entrypoints.websecure.http.tls.certResolver=letsencrypt
+      - --entrypoints.websecure.http.tls.domains[0].main=DOMINIO
+      - --entrypoints.websecure.http.tls.domains[0].sans=*.DOMINIO
+
+      # Redirecionar para HTTPS
+    #  - --entrypoints.web.address=:80
+    #  - --entrypoints.web.http.redirections.entrypoint.to=websecure
+    #  - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    #  - --entrypoints.websecure.address=:443
+
+
+
+
+
      # - --log.level=DEBUG
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./acme.json:/acme.json"
+      # Se for rodar via coomando substir linha abaixo por ./acme.json:/acme.json
+      - "/opt/traefik/acme.json:/acme.json"
     labels:
       # Dashboard
       - "traefik.http.routers.traefik.rule=Host(`DOMINIO`)"
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.entrypoints=websecure"
-      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+
+      # Declaring the user list
+      #
+      # Note: when used in docker-compose.yml all dollar signs in the hash need to be doubled for escaping.
+      # To create user:password pair, it's possible to use this command:
+      # echo $(htpasswd -nB user) | sed -e s/\\$/\\$\\$/g
+      #
+      # Also note that dollar signs should NOT be doubled when they not evaluated (e.g. Ansible docker_container module).
+      - "traefik.http.middlewares.test-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+
+     #   Redirecionar todos para HTTPS
+     # - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+     # - "traefik.http.routers.http-catchall.entrypoints=web"
+     # - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+     # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     environment:
       - CLOUDFLARE_EMAIL=CLOUDFLARE_ACCOUNT_EMAIL_ADDRESS
       - CLOUDFLARE_DNS_API_TOKEN=CLOUDFLARE_TOKEN_GOES_HERE
 
   webapp:
     image: containous/whoami
+    container_name: "webapp"
     labels:
-      - "traefik.http.routers.app1.rule=Host(`DOMINIO`)"
-      - "traefik.http.routers.app1.entrypoints=websecure"
-      - "traefik.http.routers.app1.tls=true"
-      - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.webapp.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.webapp.entrypoints=websecure"
+      - "traefik.http.routers.webapp.tls=true"
+      - "traefik.http.routers.webapp.tls.certresolver=letsencrypt"

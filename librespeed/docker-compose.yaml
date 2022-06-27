@@ -1,0 +1,11 @@
+librespeed:
+    image: ghcr.io/linuxserver/librespeed
+    container_name: librespeed
+    restart: unless-stopped
+    ports:
+      - 80
+    labels:
+      - "traefik.http.routers.sped.rule=Host(`sped.pstefano.com.br`)"
+      - "traefik.http.routers.sped.entrypoints=web"
+      - "traefik.http.routers.sped.tls=true"
+      - "traefik.http.routers.sped.tls.certresolver=letsencrypt"
