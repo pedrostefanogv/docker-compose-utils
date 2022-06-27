@@ -28,8 +28,8 @@ services:
     #  - --entrypoints.web.http.redirections.entrypoint.scheme=https
     #  - --entrypoints.websecure.address=:443
 
-
-
+    # Desabilita a exposição do container para o traefik
+      - --providers.docker.exposedByDefault=false
 
 
      # - --log.level=DEBUG
