@@ -14,13 +14,17 @@ services:
         POSTGRES_DB: postgres-db
         POSTGRES_USER: user-postgres
         POSTGRES_PASSWORD: password-postgres
-      ports:
-       - 5432:5432
+
+     # Para acessar externo descomentar abaixo
+     # ports:
+     #  - 5432:5432
+
       restart: always
       networks:
         - postgres-network
 
   pgadmin:
+    container_name: postgres-admin
     image: dpage/pgadmin4
     environment:
       PGADMIN_DEFAULT_EMAIL: "EMAIL"
@@ -36,12 +40,16 @@ services:
       # Configuração para acessar o pgadmin no navegador com traefik
       # Vide mais detalhes na configuração do traefik
 
-      - "traefik.http.routers.app1.rule=Host(`DOMINIO`)"
-      - "traefik.http.routers.app1.entrypoints=websecure"
-      - "traefik.http.routers.app1.tls=true"
-      - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.pgadmin.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.pgadmin.entrypoints=websecure"
+      - "traefik.http.routers.pgadmin.tls=true"
+      - "traefik.http.routers.pgadmin.tls.certresolver=letsencrypt"
+      - "traefik.docker.network=traefik_default"
     networks:
         - postgres-network
+        - traefik-network
 networks:
-    postgres-compose-network:
-   #   driver: none
+
+    # Rede interna para acesso ao banco de dados
+    postgres-network:
+    #   driver: none
