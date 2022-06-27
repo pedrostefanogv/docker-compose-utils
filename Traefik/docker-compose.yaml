@@ -31,6 +31,9 @@ services:
     # Desabilita a exposição do container para o traefik
       - --providers.docker.exposedByDefault=false
 
+    # Configurar o traefik pilot
+      - --pilot.token=1092fb36-9a15-42f3-9dae-9b8d296acacf
+
 
      # - --log.level=DEBUG
     ports:
