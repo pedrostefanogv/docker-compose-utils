@@ -47,7 +47,7 @@ services:
       - "traefik.docker.network=traefik_default"
     networks:
         - postgres-network
-        - traefik-network
+        - traefik_default
 networks:
 
     # Rede interna para acesso ao banco de dados
