@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+ keycloak:
+    image: quay.io/keycloak/keycloak:18.0.2
+
+    container_name: keycloak
+
+    environment:
+
+        #Configurações para autobuild
+        KC_HEALTH_ENABLED: true
+        KC_METRICS_ENABLED: true
+        KC_FEATURES: RECOVERY_CODES,DYNAMIC_SCOPES,ADMIN2,DOCKER,TOKEN_EXCHANGE, AUTHORIZATION
+        KC_HTTP_ENABLED: true
+        KC_DB: postgres
+        KC_HOSTNAME: localhost
+        KC_HOSTNAME_STRICT: 0
+        KC_SPI_HOSTNAME_DEFAULT_ADMIN: DOMAIN
+
+
+      # Configurações BD Postgres
+       # DB_VENDOR: POSTGRES
+        DB_ADDR: postgres-db
+        DB_DATABASE: DB_DATABASE
+        DB_USER: DB_USER
+        DB_PASSWORD: DB_PASSWORD
+
+        #Configurações Keycloak
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: admin
+        KEYCLOAK_ADMIN: admin
+        KEYCLOAK_ADMIN_PASSWORD: admin
+
+
+    entrypoint: ["/opt/keycloak/bin/kc.sh", "start --auto-build"]
+
+        # Para exportar as portas para acesso direto remover comentário abaixo
+   # ports:
+   #     - 8443:8443
+   #     - 8080:8080
+    restart: always
+
+
