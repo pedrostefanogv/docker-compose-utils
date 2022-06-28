@@ -79,8 +79,8 @@ services:
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     environment:
-      - CLOUDFLARE_EMAIL=CLOUDFLARE_ACCOUNT_EMAIL_ADDRESS
-      - CLOUDFLARE_DNS_API_TOKEN=CLOUDFLARE_TOKEN_GOES_HERE
+      - CF_API_EMAIL=CLOUDFLARE_ACCOUNT_EMAIL_ADDRESS
+      - CF_API_KEY=CLOUDFLARE_TOKEN_GOES_HERE
     networks:
       - traefik
       - bridge

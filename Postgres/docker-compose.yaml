@@ -44,10 +44,13 @@ services:
       - "traefik.http.routers.pgadmin.entrypoints=websecure"
       - "traefik.http.routers.pgadmin.tls=true"
       - "traefik.http.routers.pgadmin.tls.certresolver=letsencrypt"
-      - "traefik.docker.network=traefik_default"
+
+       # Habilitar traefik
+      - --traefik.enable=true
+
     networks:
         - postgres-network
-        - traefik_default
+        - traefik
 networks:
 
     # Rede interna para acesso ao banco de dados
