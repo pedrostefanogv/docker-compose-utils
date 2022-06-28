@@ -57,13 +57,18 @@ services:
       # echo $(htpasswd -nB user) | sed -e s/\\$/\\$\\$/g
       #
       # Also note that dollar signs should NOT be doubled when they not evaluated (e.g. Ansible docker_container module).
-      - "traefik.http.middlewares.test-auth.basicauth.users=test:$$apr1$$H6uskkkW$$IgXLP6ewTrSuBkTrqE8wj/,test2:$$apr1$$d9hr9HBB$$4HxwgUir3HP4EsggP/QNo0"
+      # Verificar traefikauth / traefik-https-chain
+      - "traefik.http.middlewares.traefikauth.basicauth.users="
+      - "traefik.http.middlewares.traefik-https-chain.chain.middlewares=traefikauth"
+      # linkar autentição do serviço traefik
+      - "traefik.http.routers.traefik.middlewares=traefik-https-chain"
+
 
      #   Redirecionar todos para HTTPS
-     # - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-     # - "traefik.http.routers.http-catchall.entrypoints=web"
-     # - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-     # - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
     environment:
       - CLOUDFLARE_EMAIL=CLOUDFLARE_ACCOUNT_EMAIL_ADDRESS
       - CLOUDFLARE_DNS_API_TOKEN=CLOUDFLARE_TOKEN_GOES_HERE
