@@ -46,7 +46,8 @@ services:
       - "traefik.http.routers.pgadmin.tls.certresolver=letsencrypt"
 
        # Habilitar traefik
-      - --traefik.enable=true
+      - -"traefik.enable=true"
+      - -"traefik.docker.network=traefik"
 
     networks:
         - postgres-network
