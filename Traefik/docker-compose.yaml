@@ -2,12 +2,16 @@ version: "3.3"
 
 services:
   traefik:
+    container_name: traefik
     image: "traefik:latest"
     command:
       # informa para o traefik como descobrir os containers
       - --providers.docker=true
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+
+      # informa para o traefik para não expor o container por padrão
+      - --providers.docker.exposedbydefault=false
 
       - --api
       - --certificatesresolvers.letsencrypt.acme.email=EMAIL
@@ -28,8 +32,8 @@ services:
     #  - --entrypoints.web.http.redirections.entrypoint.scheme=https
     #  - --entrypoints.websecure.address=:443
 
-    # Desabilita a exposição do container para o traefik
-      - --providers.docker.exposedByDefault=false
+    # Habilitar traefik
+      - --traefik.enable=true
 
     # Configurar o traefik pilot
       - --pilot.token=1092fb36-9a15-42f3-9dae-9b8d296acacf
@@ -49,6 +53,11 @@ services:
       - "traefik.http.routers.traefik.service=api@internal"
       - "traefik.http.routers.traefik.tls.certresolver=letsencrypt"
       - "traefik.http.routers.traefik.entrypoints=websecure"
+
+      # Habilitar o traefik para expor o container
+      - "traefik.enable=true"
+      # Definir network do container para usar ip para expor
+      - "traefik.docker.network= traefik"
 
       # Declaring the user list
       #
@@ -72,6 +81,9 @@ services:
     environment:
       - CLOUDFLARE_EMAIL=CLOUDFLARE_ACCOUNT_EMAIL_ADDRESS
       - CLOUDFLARE_DNS_API_TOKEN=CLOUDFLARE_TOKEN_GOES_HERE
+    networks:
+      - traefik
+      - bridge
 
   webapp:
     image: containous/whoami
@@ -81,3 +93,8 @@ services:
       - "traefik.http.routers.webapp.entrypoints=websecure"
       - "traefik.http.routers.webapp.tls=true"
       - "traefik.http.routers.webapp.tls.certresolver=letsencrypt"
+
+       #Habilitar o traefik para expor o container
+      - "traefik.enable=true"
+    networks:
+      - traefik
