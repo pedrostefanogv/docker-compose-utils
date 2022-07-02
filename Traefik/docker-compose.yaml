@@ -1,10 +1,35 @@
 version: "3.3"
 
 services:
+
+  traefik-hub:
+    image: ghcr.io/traefik/hub-agent-traefik
+    container_name: traefikhub-agent
+    restart: "always"
+    command:
+      - run
+      - --hub.token=TOKEN
+      - --auth-server.advertise-url=http://hub-agent
+      - --traefik.host=traefik
+      - --traefik.tls.insecure=true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+    networks:
+      - traefik
+
+    depends_on:
+      - traefik
   traefik:
     container_name: traefik
     image: "traefik:latest"
     command:
+       # Habilitar HUB
+      - --experimental.hub=true
+      - --hub.tls.insecure=true
+      - --metrics.prometheus.addrouterslabels=true
+
+
       # informa para o traefik como descobrir os containers
       - --providers.docker=true
       - --entrypoints.web.address=:80
@@ -36,7 +61,7 @@ services:
       - --traefik.enable=true
 
     # Configurar o traefik pilot
-      - --pilot.token=1092fb36-9a15-42f3-9dae-9b8d296acacf
+      - --pilot.token=TOKEN
 
 
      # - --log.level=DEBUG
@@ -89,12 +114,12 @@ services:
     image: containous/whoami
     container_name: "webapp"
     labels:
+       #Habilitar o traefik para expor o container
+      - "traefik.enable=true"
       - "traefik.http.routers.webapp.rule=Host(`DOMINIO`)"
       - "traefik.http.routers.webapp.entrypoints=websecure"
       - "traefik.http.routers.webapp.tls=true"
       - "traefik.http.routers.webapp.tls.certresolver=letsencrypt"
 
-       #Habilitar o traefik para expor o container
-      - "traefik.enable=true"
     networks:
       - traefik
