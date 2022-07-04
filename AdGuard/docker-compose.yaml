@@ -1,0 +1,55 @@
+version: '3.7'
+
+volumes:
+  adguard_data:
+      driver: local
+
+networks:
+  traefik_default:
+    name: traefik_default
+    external: true
+
+services:
+  adguardhome:
+    image: adguard/adguardhome
+    container_name: adguardhome
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+    volumes:
+      - adguard_data:/opt/adguardhome
+
+    labels:
+      - "traefik.enable=true"
+    #  - "traefik.docker.network=prox"
+
+    # https
+      - "traefik.http.routers.adguardhome-secure.rule=Host(`mydomain.tld`)"
+      - "traefik.http.routers.adguardhome-secure.entrypoints=websecure"
+      - "traefik.http.routers.adguardhome-secure.tls=true"
+      - "traefik.http.routers.adguardhome-secure.service=adguardhome"
+      - "traefik.http.services.adguardhome.loadbalancer.passhostheader=true"
+    # tried with port 443 still getting error
+      - "traefik.http.services.adguardhome.loadbalancer.server.port=80"
+
+    # DNS
+      - "traefik.tcp.routers.adguard_dns.entrypoints=dns_tcp"
+      - "traefik.tcp.routers.adguard_dns.rule=Host(`mydomain.tld`)"
+      - "traefik.tcp.routers.adguard-dot.service=adguard_dns_tcp"
+      - "traefik.tcp.services.adguard_dns_tcp.loadbalancer.server.port=53"
+
+      - "traefik.udp.routers.adguard_dns.entrypoints=dns_udp"
+      - "traefik.udp.routers.adguard_dns.rule=Host(`mydomain.tld`)"
+      - "traefik.udp.routers.adguard-dot.service=adguard_dns_udp"
+      - "traefik.udp.services.adguard_dns.loadbalancer.server.port=53"
+
+      # DNS-over-TLS
+      - "traefik.tcp.routers.adguard-dot.rule=HostSNI(`mydomain.tld`)"
+      - "traefik.tcp.routers.adguard-dot.entrypoints=dnsovertls"
+      - "traefik.tcp.routers.adguard-dot.tls=true"
+      - "traefik.tcp.routers.adguard-dot.service=adguardhome"
+      - "traefik.tcp.services.adguardhome.loadbalancer.server.port=853"
+
+    networks:
+      - traefik_default
+

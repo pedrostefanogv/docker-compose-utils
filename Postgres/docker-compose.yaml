@@ -1,5 +1,13 @@
 version: '3'
+networks:
 
+   # Rede interna para acesso ao banco de dados
+  postgresDB_netowork:
+    name: postgresDB_netowork
+    external: false
+  traefik_default:
+    name: traefik_default
+    external: true
 volumes:
   postgres_data:
       driver: local
@@ -21,7 +29,7 @@ services:
 
       restart: always
       networks:
-        - postgres-network
+        - postgresDB_netowork
 
   pgadmin:
     container_name: postgres-admin
@@ -50,10 +58,5 @@ services:
       - -"traefik.docker.network=traefik"
 
     networks:
-        - postgres-network
-        - traefik
-networks:
-
-    # Rede interna para acesso ao banco de dados
-    postgres-network:
-    #   driver: none
+        - traefik_default
+        - postgresDB_netowork

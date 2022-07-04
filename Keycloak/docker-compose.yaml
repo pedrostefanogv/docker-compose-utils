@@ -1,8 +1,14 @@
 version: '3.8'
 
+networks:
+  traefik_default:
+    name: traefik_default
+    external: true
+
+
 services:
  keycloak:
-    image: quay.io/keycloak/keycloak:18.0.2
+    image: quay.io/keycloak/keycloak:18.0
 
     container_name: keycloak
 
@@ -14,7 +20,7 @@ services:
         KC_FEATURES: RECOVERY_CODES,DYNAMIC_SCOPES,ADMIN2,DOCKER,TOKEN_EXCHANGE, AUTHORIZATION
         KC_HTTP_ENABLED: true
         KC_DB: postgres
-        KC_HOSTNAME: localhost
+        KC_HOSTNAME: keycloak
         KC_HOSTNAME_STRICT: 0
         KC_SPI_HOSTNAME_DEFAULT_ADMIN: DOMAIN
         KC_HOSTNAME_ADMIN: DOMAIN
@@ -35,10 +41,12 @@ services:
         KEYCLOAK_ADMIN_PASSWORD: admin
 
     labels:
-      - "traefik.http.routers.app1.rule=Host(`DOMINIO`)"
-      - "traefik.http.routers.app1.entrypoints=websecure"
-      - "traefik.http.routers.app1.tls=true"
-      - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.keycloak.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.keycloak.entrypoints=websecure"
+      - "traefik.http.routers.keycloak.tls=true"
+      - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
+      - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
+     # - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
 
     # Configurado para fazer auto build do Keycloak
     entrypoint: ["/opt/keycloak/bin/kc.sh", "start --auto-build"]
@@ -48,9 +56,7 @@ services:
    #     - 8443:8443
    #     - 8080:8080
     restart: always
-networks:
-  default:
-   name: bridge
-   external: true
+    networks:
+      - traefik_default
 
 

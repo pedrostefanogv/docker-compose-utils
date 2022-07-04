@@ -26,8 +26,8 @@ services:
       - "traefik.http.routers.app1.entrypoints=websecure"
       - "traefik.http.routers.app1.tls=true"
       - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
+    networks:
+      - traefik
 volumes:
   portainer_data:
-
-
 
