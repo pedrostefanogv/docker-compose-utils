@@ -45,6 +45,11 @@ services:
     depends_on:
       - postgres
     labels:
+
+      # Habilitar traefik
+      - -"traefik.enable=true"
+      - -"traefik.docker.network=traefik"
+
       # Configuração para acessar o pgadmin no navegador com traefik
       # Vide mais detalhes na configuração do traefik
 
@@ -53,9 +58,7 @@ services:
       - "traefik.http.routers.pgadmin.tls=true"
       - "traefik.http.routers.pgadmin.tls.certresolver=letsencrypt"
 
-       # Habilitar traefik
-      - -"traefik.enable=true"
-      - -"traefik.docker.network=traefik"
+
 
     networks:
         - traefik_default
