@@ -18,6 +18,8 @@ services:
     container_name: keycloak
 
     environment:
+      # habilitar determinadas funcionalidades
+        KC_FEATURES: RECOVERY_CODES,DYNAMIC_SCOPES,ADMIN2,DOCKER,TOKEN_EXCHANGE,ADMIN_FINE_GRAINED_AUTHZ,DECLARATIVE_USER_PROFILE
 
       # configuração proxy e acesso externo
         KC_SPI_HOSTNAME_DEFAULT_ADMIN: DOMINIO
