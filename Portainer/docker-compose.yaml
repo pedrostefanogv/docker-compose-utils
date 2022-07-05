@@ -1,5 +1,13 @@
 version: '3'
 
+networks:
+  # rede para acesso ao proxy
+  traefik_default:
+    name: traefik_default
+    external: true
+
+volumes:
+  portainer_data:
 services:
   portainer:
     image: portainer/portainer-ce:latest
@@ -22,12 +30,13 @@ services:
       # Configuração para acessar o protainer via dominio com o traefik
       # Vide mais detalhes na configuração do traefik
 
-      - "traefik.http.routers.app1.rule=Host(`DOMINIO`)"
-      - "traefik.http.routers.app1.entrypoints=websecure"
-      - "traefik.http.routers.app1.tls=true"
-      - "traefik.http.routers.app1.tls.certresolver=letsencrypt"
+      - "traefik.enable=true"
+      - "traefik.http.routers.portainer.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.portainer.entrypoints=websecure"
+      - "traefik.http.routers.portainer.tls=true"
+      - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
+      - "traefik.http.services.portainer.loadbalancer.server.port=9000"
     networks:
       - traefik
-volumes:
-  portainer_data:
+
 
