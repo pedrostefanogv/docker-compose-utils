@@ -4,59 +4,57 @@ networks:
   traefik_default:
     name: traefik_default
     external: true
+  posgres_db_postgres-network:
+   name: posgres_db_postgres-network
 
 
 services:
  keycloak:
-    image: quay.io/keycloak/keycloak:18.0
+    image: quay.io/keycloak/keycloak
 
     container_name: keycloak
 
     environment:
 
-        #Configurações para autobuild
-        KC_HEALTH_ENABLED: true
-        KC_METRICS_ENABLED: true
-        KC_FEATURES: RECOVERY_CODES,DYNAMIC_SCOPES,ADMIN2,DOCKER,TOKEN_EXCHANGE, AUTHORIZATION
+        KC_SPI_HOSTNAME_DEFAULT_ADMIN: DOMINIO
+
         KC_HTTP_ENABLED: true
-        KC_DB: postgres
-        KC_HOSTNAME: keycloak
-        KC_HOSTNAME_STRICT: 0
-        KC_SPI_HOSTNAME_DEFAULT_ADMIN: DOMAIN
-        KC_HOSTNAME_ADMIN: DOMAIN
+        KC_HOSTNAME_STRICT: false
         KC_PROXY: edge
 
-
-      # Configurações BD Postgres
-        DB_VENDOR: POSTGRES
-        DB_ADDR: postgres-db
-        DB_DATABASE: DB_DATABASE
-        DB_USER: DB_USER
-        DB_PASSWORD: DB_PASSWORD
+        KC_DB: postgres
+        KC_DB_URL: jdbc:postgresql://postgres/keycloak
+        KC_DB_USERNAME: ppostgres
+        KC_DB_PASSWORD: pwkeycloak
 
         #Configurações Keycloak
-        KEYCLOAK_USER: admin
-        KEYCLOAK_PASSWORD: admin
+      #  KEYCLOAK_USER: admin
+      #  KEYCLOAK_PASSWORD: admin
         KEYCLOAK_ADMIN: admin
         KEYCLOAK_ADMIN_PASSWORD: admin
 
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.keycloak.rule=Host(`DOMINIO`)"
       - "traefik.http.routers.keycloak.entrypoints=websecure"
       - "traefik.http.routers.keycloak.tls=true"
       - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
-      - "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
-     # - "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+      - "traefik.docker.network=traefik_default"
+      #- "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
+      #- "traefik.http.services.keycloak.loadbalancer.server.port=8080"
 
     # Configurado para fazer auto build do Keycloak
     entrypoint: ["/opt/keycloak/bin/kc.sh", "start --auto-build"]
 
-        # Para exportar as portas para acesso direto remover comentário abaixo
+   # Para exportar as portas para acesso direto remover comentário abaixo
    # ports:
+   # - 5432:5432
    #     - 8443:8443
-   #     - 8080:8080
+   #  - 8080:8080
+
     restart: always
     networks:
       - traefik_default
+      - posgres_db_postgres-network
 
 
