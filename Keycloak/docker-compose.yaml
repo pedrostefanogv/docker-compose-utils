@@ -1,9 +1,12 @@
 version: '3.8'
 
 networks:
+
+  # rede para acesso ao proxy
   traefik_default:
     name: traefik_default
     external: true
+  # rede para acesso ao DB
   posgres_db_postgres-network:
    name: posgres_db_postgres-network
 
@@ -16,20 +19,20 @@ services:
 
     environment:
 
+      # configuração proxy e acesso externo
         KC_SPI_HOSTNAME_DEFAULT_ADMIN: DOMINIO
-
         KC_HTTP_ENABLED: true
         KC_HOSTNAME_STRICT: false
         KC_PROXY: edge
 
+      # configuração DB
         KC_DB: postgres
         KC_DB_URL: jdbc:postgresql://postgres/keycloak
         KC_DB_USERNAME: ppostgres
         KC_DB_PASSWORD: pwkeycloak
 
-        #Configurações Keycloak
-      #  KEYCLOAK_USER: admin
-      #  KEYCLOAK_PASSWORD: admin
+      # Configurações Keycloak usuario inicial
+
         KEYCLOAK_ADMIN: admin
         KEYCLOAK_ADMIN_PASSWORD: admin
 
@@ -40,8 +43,7 @@ services:
       - "traefik.http.routers.keycloak.tls=true"
       - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
       - "traefik.docker.network=traefik_default"
-      #- "traefik.http.services.keycloak.loadbalancer.passhostheader=true"
-      #- "traefik.http.services.keycloak.loadbalancer.server.port=8080"
+
 
     # Configurado para fazer auto build do Keycloak
     entrypoint: ["/opt/keycloak/bin/kc.sh", "start --auto-build"]
