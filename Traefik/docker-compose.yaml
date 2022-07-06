@@ -57,15 +57,17 @@ services:
       - --api
       - --certificatesresolvers.letsencrypt.acme.email=EMAIL
       - --certificatesresolvers.letsencrypt.acme.storage=/acme.json
-      - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
+     # - --certificatesresolvers.letsencrypt.acme.tlschallenge=true
       - --certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare
       - --certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1
+      - --certificatesresolvers.letsencrypt.acme.dnschallenge.delaybeforecheck=0
 
       # configurar certificado coringa
       - --entrypoints.websecure.http.tls=true
       - --entrypoints.websecure.http.tls.certResolver=letsencrypt
       - --entrypoints.websecure.http.tls.domains[0].main=DOMINIO
       - --entrypoints.websecure.http.tls.domains[0].sans=*.DOMINIO
+
 
 
     # Configurar o traefik pilot
@@ -90,7 +92,7 @@ services:
       # Habilitar o traefik para expor o container
       - "traefik.enable=true"
       # Definir network do container para usar ip para expor
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik"
 
       # Declaring the user list
       #

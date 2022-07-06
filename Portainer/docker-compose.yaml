@@ -1,10 +1,6 @@
 version: '3'
 
-networks:
-  # rede para acesso ao proxy
-  traefik:
-    name: traefik
-    external: false
+
 
 volumes:
   portainer_data:
@@ -25,7 +21,7 @@ services:
    # Se necessário acessar o portainer via porta mapeada, remover comentários abaixo
 
     ports:
-      - 9433:9433
+      - 9443:9443
    #   - 8000:8000
 
     labels:
@@ -38,7 +34,6 @@ services:
       - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
       - "traefik.http.services.portainer.loadbalancer.server.port=8000"
-    networks:
-      - traefik
+
 
 
