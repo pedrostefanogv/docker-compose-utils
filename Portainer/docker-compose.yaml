@@ -2,9 +2,9 @@ version: '3'
 
 networks:
   # rede para acesso ao proxy
-  traefik_default:
-    name: traefik_default
-    external: true
+  traefik:
+    name: traefik
+    external: false
 
 volumes:
   portainer_data:
@@ -33,12 +33,12 @@ services:
       # Vide mais detalhes na configuração do traefik
 
       - "traefik.enable=true"
-      - "traefik.http.routers.portainer.rule=Host(`pt.pstefano.com.br`)"
+      - "traefik.http.routers.portainer.rule=Host(`DOMINIO`)"
       - "traefik.http.routers.portainer.entrypoints=websecure"
       - "traefik.http.routers.portainer.tls=true"
       - "traefik.http.routers.portainer.tls.certresolver=letsencrypt"
       - "traefik.http.services.portainer.loadbalancer.server.port=8000"
     networks:
-      - traefik_default
+      - traefik
 
 

@@ -2,9 +2,9 @@ version: "3.3"
 
 # Configuração das redes entre os containers
 networks:
-  traefik_default:
-    name: traefik_default
-    external: true
+  traefik:
+    name: traefik
+    external: false
   bridge:
     name: bridge
     external: true
@@ -27,12 +27,13 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
     networks:
-      - traefik_default
+      - traefik
 
     depends_on:
       - traefik
   traefik:
     container_name: traefik
+    restart: "always"
     image: "traefik:latest"
     command:
        # Habilitar HUB
@@ -120,6 +121,7 @@ services:
   webapp:
     image: containous/whoami
     container_name: "webapp"
+    restart: "always"
     labels:
        #Habilitar o traefik para expor o container
       - "traefik.enable=true"
@@ -129,5 +131,5 @@ services:
       - "traefik.http.routers.webapp.tls.certresolver=letsencrypt"
 
     networks:
-      - traefik_default
+      - traefik
 

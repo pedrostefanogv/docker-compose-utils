@@ -5,8 +5,8 @@ networks:
   postgresDB_netowork:
     name: postgresDB_netowork
     external: false
-  traefik_default:
-    name: traefik_default
+  traefik:
+    name: traefik
     external: true
 volumes:
   postgres_data:
@@ -47,8 +47,8 @@ services:
     labels:
 
       # Habilitar traefik
-      - -"traefik.enable=true"
-      - -"traefik.docker.network=traefik"
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
 
       # Configuração para acessar o pgadmin no navegador com traefik
       # Vide mais detalhes na configuração do traefik
@@ -61,5 +61,5 @@ services:
 
 
     networks:
-        - traefik_default
+        - traefik
         - postgresDB_netowork

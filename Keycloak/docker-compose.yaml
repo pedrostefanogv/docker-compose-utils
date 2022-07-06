@@ -3,12 +3,13 @@ version: '3.8'
 networks:
 
   # rede para acesso ao proxy
-  traefik_default:
-    name: traefik_default
+  traefik:
+    name: traefik
     external: true
   # rede para acesso ao DB
-  posgres_db_postgres-network:
-   name: posgres_db_postgres-network
+  postgresDB_netowork:
+   name: postgresDB_netowork
+   external: false
 
 
 services:
@@ -44,7 +45,8 @@ services:
       - "traefik.http.routers.keycloak.entrypoints=websecure"
       - "traefik.http.routers.keycloak.tls=true"
       - "traefik.http.routers.keycloak.tls.certresolver=letsencrypt"
-      - "traefik.docker.network=traefik_default"
+      - "traefik.docker.network=traefik"
+
 
 
     # Configurado para fazer auto build do Keycloak
@@ -58,7 +60,7 @@ services:
 
     restart: always
     networks:
-      - traefik_default
-      - posgres_db_postgres-network
+      - traefik
+      - postgresDB_netowork
 
 

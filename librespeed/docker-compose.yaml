@@ -1,8 +1,8 @@
 version: '3'
 
 networks:
-  traefik_default:
-    name: traefik_default
+  traefik:
+    name: traefik
     external: true
 
 services:
@@ -17,6 +17,7 @@ services:
       - "traefik.http.routers.sped.entrypoints=websecure"
       - "traefik.http.routers.sped.tls=true"
       - "traefik.http.routers.sped.tls.certresolver=letsencrypt"
+      - "traefik.enable=true"
 
     networks:
-      - traefik_default
+      - traefik
