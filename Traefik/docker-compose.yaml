@@ -67,10 +67,6 @@ services:
       - --entrypoints.websecure.http.tls.domains[0].sans=*.DOMINIO
 
 
-
-    # Habilitar traefik
-      - --traefik.enable=true
-
     # Configurar o traefik pilot
       - --pilot.token=TOKEN
 
