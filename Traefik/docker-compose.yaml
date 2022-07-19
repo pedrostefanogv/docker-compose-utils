@@ -10,7 +10,6 @@ networks:
     external: true
 
 
-
 services:
 
   traefik-hub:
@@ -47,9 +46,7 @@ services:
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
 
-      - --entrypoints.dns_udp.address=:53/udp
-      - --entrypoints.dns_tcp.address=:53/tcp
-      - --entrypoints.dnsovertls.address=:853
+    
 
       # informa para o traefik para não expor o container por padrão
       - --providers.docker.exposedbydefault=false
