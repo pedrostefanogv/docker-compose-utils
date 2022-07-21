@@ -19,10 +19,10 @@ services:
     volumes:
       - remotely-data:/remotely-data
     labels:
-      - "traefik.http.routers.sped.rule=Host(`DOMINIO`)"
-      - "traefik.http.routers.sped.entrypoints=websecure"
-      - "traefik.http.routers.sped.tls=true"
-      - "traefik.http.routers.sped.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.remotely.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.remotely.entrypoints=websecure"
+      - "traefik.http.routers.remotely.tls=true"
+      - "traefik.http.routers.remotely.tls.certresolver=letsencrypt"
       - "traefik.enable=true"
 
     networks:
