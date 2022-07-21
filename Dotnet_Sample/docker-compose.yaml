@@ -5,14 +5,14 @@ networks:
     name: traefik
     external: true
 
+
 services:
   remotely:
     restart: always
-    image: translucency/remotely:latest
+    image: registry.gitlab.com/pedrostefanogv/dotnet_keycloak_auth:latest
    # ports:
    #   - 5000:5000
-    volumes:
-      - /remotely-data:/remotely-data
+
     labels:
       - "traefik.http.routers.sped.rule=Host(`DOMINIO`)"
       - "traefik.http.routers.sped.entrypoints=websecure"

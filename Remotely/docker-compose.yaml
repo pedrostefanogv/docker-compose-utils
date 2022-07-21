@@ -1,0 +1,29 @@
+version: "3"
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+
+volumes:
+  remotely-data:
+      driver: local
+
+
+services:
+  remotely:
+    restart: always
+    image: translucency/remotely:latest
+   # ports:
+   #   - 5000:5000
+    volumes:
+      - remotely-data:/remotely-data
+    labels:
+      - "traefik.http.routers.sped.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.sped.entrypoints=websecure"
+      - "traefik.http.routers.sped.tls=true"
+      - "traefik.http.routers.sped.tls.certresolver=letsencrypt"
+      - "traefik.enable=true"
+
+    networks:
+      - traefik
