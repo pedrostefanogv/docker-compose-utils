@@ -124,6 +124,8 @@ services:
       - traefik
 
   traefik-certs-dumper:
+    container_name: "traefik-dumpcerts"
+    restart: "always"
     image: ldez/traefik-certs-dumper:v2.8.1
     entrypoint: sh -c '
       apk add jq
