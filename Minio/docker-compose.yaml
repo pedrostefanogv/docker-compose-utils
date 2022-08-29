@@ -20,6 +20,8 @@ services:
     restart: always
     image: quay.io/minio/minio
     container_name: minio
+    command: server --console-address ":9000" http://minio/data{1...2}
+
     volumes:
       - data1-1:/data1
       - data1-2:/data2
@@ -32,7 +34,7 @@ services:
       - "traefik.http.routers.minio.entrypoints=websecure"
       - "traefik.http.routers.minio.tls=true"
       - "traefik.http.routers.minio.tls.certresolver=letsencrypt"
-      - "traefik.http.services.minio.loadbalancer.server.port=80"
+      - "traefik.http.services.minio.loadbalancer.server.port=9000"
 
       - "traefik.enable=true"
 
