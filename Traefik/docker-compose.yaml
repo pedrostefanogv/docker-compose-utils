@@ -129,6 +129,22 @@ services:
       - traefik
 
 
+  traefik-certs-dumper:
+    image: ldez/traefik-certs-dumper:v2.8.1
+    entrypoint: sh -c '
+      apk add jq
+      ; while ! [ -e /data/acme.json ]
+      || ! [ `jq ".[] | .Certificates | length" /data/acme.json` != 0 ]; do
+      sleep 1
+      ; done
+      && traefik-certs-dumper file --version v2 --watch
+      --source /acme.json --dest /data/certs'
+    volumes:
+      - "/opt/traefik/acme.json:/acme.json"
+      - "/opt/traefik/data:/data"
+
+
+
   webapp:
     image: containous/whoami
     container_name: "webapp"
