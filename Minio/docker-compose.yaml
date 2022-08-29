@@ -26,6 +26,8 @@ services:
       - data1-1:/data1
       - data1-2:/data2
     environment:
+       MINIO_DOMAIN: minio.domain.com.br
+       MINIO_SERVER_URL: https://minio.domain.com.br
        MINIO_ROOT_USER: minioadmin
        MINIO_ROOT_PASSWORD: minioadmin
 
