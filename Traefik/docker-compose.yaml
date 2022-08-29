@@ -116,11 +116,6 @@ services:
       - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
       - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
-
-
-
-
-
     environment:
       - CF_API_EMAIL=CF_API_EMAIL
       - CF_API_KEY=CF_API_KEY
@@ -128,21 +123,19 @@ services:
       - bridge
       - traefik
 
-
   traefik-certs-dumper:
     image: ldez/traefik-certs-dumper:v2.8.1
     entrypoint: sh -c '
       apk add jq
-      ; while ! [ -e /data/acme.json ]
-      || ! [ `jq ".[] | .Certificates | length" /data/acme.json` != 0 ]; do
+      ; while ! [ -e /acme.json ]
+      || ! [ `jq ".[] | .Certificates | length" /acme.json` != 0 ]; do
       sleep 1
       ; done
       && traefik-certs-dumper file --version v2 --watch
-      --source /acme.json --dest /data/certs'
+      --source /acme.json --dest /data'
     volumes:
       - "/opt/traefik/acme.json:/acme.json"
       - "/opt/traefik/data:/data"
-
 
 
   webapp:
