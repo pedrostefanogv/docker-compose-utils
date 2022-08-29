@@ -1,0 +1,46 @@
+version: '3.7'
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+
+
+volumes:
+  data1-1:
+     name: data1-1
+     driver: local
+  data1-2:
+     name: data1-2
+     driver: local
+
+
+services:
+   minio1:
+    restart: always
+    image: quay.io/minio/minio
+    container_name: minio
+    volumes:
+      - data1-1:/data1
+      - data1-2:/data2
+    environment:
+       MINIO_ROOT_USER: minioadmin
+       MINIO_ROOT_PASSWORD: minioadmin
+
+    labels:
+      - "traefik.http.routers.minio.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.minio.entrypoints=websecure"
+      - "traefik.http.routers.minio.tls=true"
+      - "traefik.http.routers.minio.tls.certresolver=letsencrypt"
+      - "traefik.http.services.minio.loadbalancer.server.port=80"
+
+      - "traefik.enable=true"
+
+    networks:
+      - traefik
+
+
+
+
+
+
