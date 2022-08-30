@@ -5,7 +5,6 @@ networks:
     name: traefik
     external: true
 
-
 volumes:
   data1-1:
      name: data1-1
@@ -20,25 +19,43 @@ services:
     restart: always
     image: quay.io/minio/minio
     container_name: minio
-    command: server --console-address ":9000" http://minio/data{1...2}
+    command: server  --console-address ":80" http://minio/data{1...2}
 
     volumes:
       - data1-1:/data1
       - data1-2:/data2
+      - "/opt/traefik/data/private:/.minio/certs:ro"
     environment:
-       MINIO_DOMAIN: minio.domain.com.br
-       MINIO_SERVER_URL: https://minio.domain.com.br
+
+       MINIO_DOMAIN: DOMINIO.COM.BR
+       MINIO_SERVER_URL: https://s3.DOMINIO.COM.BR
+       MINIO_BROWSER_REDIRECT_URL: http://console.s3.DOMINIO.COM.BR
+       CONSOLE_SECURE_TLS_REDIRECT: off
        MINIO_ROOT_USER: minioadmin
        MINIO_ROOT_PASSWORD: minioadmin
 
     labels:
-      - "traefik.http.routers.minio.rule=Host(`DOMINIO`)"
+
+    # console
+      - "traefik.http.routers.minio.rule=Host(`console.s3.DOMINIO.COM.BR`)"
       - "traefik.http.routers.minio.entrypoints=websecure"
       - "traefik.http.routers.minio.tls=true"
       - "traefik.http.routers.minio.tls.certresolver=letsencrypt"
-      - "traefik.http.services.minio.loadbalancer.server.port=9000"
+      - "traefik.http.services.minio.loadbalancer.server.port=80"
+      - "traefik.http.routers.minio.service=minio"
 
+    # Api
+      - "traefik.http.routers.minio-api.rule=Host(`s3.DOMINIO.COM.BR`)"
+      - "traefik.http.routers.minio-api.entrypoints=websecure"
+      - "traefik.http.routers.minio-api.tls=true"
+      - "traefik.http.routers.minio-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.minio-api.loadbalancer.server.port=9000"
+      - "traefik.http.routers.minio-api.service=minio-api"
+
+
+      - "traefik.frontend.passHostHeader=true"
       - "traefik.enable=true"
+
 
     networks:
       - traefik
