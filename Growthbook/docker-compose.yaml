@@ -1,0 +1,63 @@
+version: "3"
+
+volumes:
+  uploads:
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+  growthbook:
+
+
+services:
+
+  mongo:
+    restart: always
+    image: "mongo:latest"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+
+    networks:
+      - growthbook
+
+
+  growthbook:
+    restart: always
+    image: "growthbook/growthbook:latest"
+    labels:
+      - "traefik.http.routers.tags.rule=Host(`DOMINIO FRONTEND`)"
+      - "traefik.http.routers.tags.entrypoints=websecure"
+      - "traefik.http.routers.tags.tls=true"
+      - "traefik.http.routers.tags.tls.certresolver=letsencrypt"
+
+      - "traefik.http.routers.tags.service=tags"
+      - "traefik.http.services.tags.loadbalancer.server.port=3000"
+
+      - "traefik.http.routers.api-tags.rule=Host(`DOMINIO API`)"
+      - "traefik.http.routers.api-tags.entrypoints=websecure"
+      - "traefik.http.routers.api-tags.tls=true"
+      - "traefik.http.routers.api-tags.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.api-tags.service=api-tags"
+      - "traefik.http.services.api-tags.loadbalancer.server.port=3100"
+
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+   # ports:
+   #   - "3000:3000"
+   #   - "3100:3100"
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://root:password@mongo:27017/
+      - APP_ORIGIN=DOMINIO FRONTEND
+      - API_HOST=DOMINIO API
+      - JWT_SECRET= UUID ALERATORIO
+
+    volumes:
+      - uploads:/usr/local/src/app/packages/back-end/uploads
+    networks:
+      - traefik
+      - growthbook
