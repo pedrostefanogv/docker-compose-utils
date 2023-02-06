@@ -25,6 +25,7 @@ services:
     #   - 8080:8080
     environment:
       - LOG_LEVEL=INFO
+      - LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK=true
     volumes:
       - ./data:/app/data
     networks:
