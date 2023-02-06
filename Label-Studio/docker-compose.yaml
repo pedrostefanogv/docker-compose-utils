@@ -1,0 +1,31 @@
+version: "3"
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+
+services:
+  label-studio:
+    restart: always
+    image: heartexlabs/label-studio:latest
+    labels:
+      - "traefik.http.routers.label-studio.rule=Host(`DOMINIO FRONTEND`)"
+      - "traefik.http.routers.label-studio.entrypoints=websecure"
+      - "traefik.http.routers.label-studio.tls=true"
+      - "traefik.http.routers.label-studio.tls.certresolver=letsencrypt"
+
+      - "traefik.http.routers.label-studio.service=label-studio"
+      - "traefik.http.services.tags.loadbalancer.server.port=8080"
+
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+
+    # ports:
+    #   - 8080:8080
+    environment:
+      - LOG_LEVEL=INFO
+    volumes:
+      - ./data:/app/data
+    networks:
+      - traefik
