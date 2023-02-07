@@ -26,6 +26,8 @@ services:
     environment:
       - LOG_LEVEL=INFO
       - LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK=true
+      - LABEL_STUDIO_USERNAME=EMAIL
+      - LABEL_STUDIO_PASSWORD=SENHA
     volumes:
       - ./data:/app/data
     networks:

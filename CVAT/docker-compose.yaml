@@ -1,0 +1,59 @@
+version: "3"
+
+networks:
+  traefik:
+    name: traefik
+    external: true
+
+services:
+  db:
+    restart: always
+    image: postgres:15
+    environment:
+      POSTGRES_DB: cvat
+      POSTGRES_USER: cvat
+      POSTGRES_PASSWORD: cvat
+    volumes:
+      - cvat-db-data:/var/lib/postgresql/data
+
+  redis:
+    restart: always
+    image: redis:5-alpine
+
+  rabbitmq:
+    restart: always
+    image: rabbitmq:3-management-alpine
+
+  cvat:
+    restart: always
+    image: cvat/cvat:latest
+    environment:
+      DJANGO_DEBUG: "True"
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: cvat
+      DB_USER: cvat
+      DB_PASSWORD: cvat
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      CELERY_BROKER_URL: amqp://guest:guest@rabbitmq:5672//
+    #ports:
+    #  - "8080:8080"
+    labels:
+      - "traefik.http.routers.cvat.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.cvat.entrypoints=websecure"
+      - "traefik.http.routers.cvat.tls=true"
+      - "traefik.http.routers.cvat.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.cvat.service=cvat"
+      - "traefik.http.services.cvat.loadbalancer.server.port=8080"
+
+      - "traefik.docker.network=traefik"
+
+      - "traefik.enable=true"
+    depends_on:
+      - db
+      - redis
+      - rabbitmq
+
+volumes:
+  cvat-db-data:
