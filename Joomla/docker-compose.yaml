@@ -1,0 +1,41 @@
+version: "3.1"
+
+networks:
+  # rede para acesso ao proxy
+  traefik:
+    name: traefik
+    external: true
+  # rede para acesso ao DB
+  DB_netowork:
+    name: DB_netowork
+    external: false
+
+services:
+  joomla:
+    image: joomla
+    restart: always
+    links:
+      - joomladb:mysql
+    #ports:
+    # - 8080:80
+    environment:
+      JOOMLA_DB_HOST: joomladb
+      JOOMLA_DB_PASSWORD: PASSWORD
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik"
+      - "traefik.http.routers.joomla.rule=Host(`DOMINIO`)"
+      - "traefik.http.routers.joomla.entrypoints=websecure"
+      - "traefik.http.routers.joomla.tls=true"
+      - "traefik.http.routers.joomla.tls.certresolver=letsencrypt"
+      - "traefik.http.services.joomla.loadbalancer.server.port=80"
+    networks:
+      - traefik
+
+  joomladb:
+    image: mysql:5.6
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: PASSWORD
+    networks:
+      - DB_netowork
