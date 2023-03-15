@@ -12,6 +12,7 @@ networks:
 
 services:
   joomla:
+    container_name: joomla
     image: joomla
     restart: always
     links:
@@ -31,8 +32,10 @@ services:
       - "traefik.http.services.joomla.loadbalancer.server.port=80"
     networks:
       - traefik
+      - DB_netowork
 
   joomladb:
+    container_name: joomladb
     image: mysql:5.6
     restart: always
     environment:
